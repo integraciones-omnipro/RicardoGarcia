@@ -1,0 +1,19 @@
+{
+  "name": "omnipro/module-quick-product-positioning",
+  "version": "1.0.0",
+  "description": "Importer of product position in categories through csv.",
+  "type": "magento2-module",
+  "require": {
+    "php": "~7.4.0||~8.1.0||~8.2.0",
+    "magento/framework": "*",
+    "magento/module-catalog": "*"
+  },
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Omnipro\\QuickProductPositioning\\": ""
+    }
+  }
+}
