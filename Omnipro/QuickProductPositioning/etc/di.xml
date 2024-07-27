@@ -15,6 +15,19 @@
             <argument name="filterPool" xsi:type="object" shared="false">OmniproQuickProductPositioningGridFilterPool</argument>
         </arguments>
     </virtualType>
+
+    <preference for="Magento\Catalog\Block\Adminhtml\Category\AssignProducts"
+                type="Omnipro\QuickProductPositioning\Block\Adminhtml\Category\AssignProducts" />
+
+
+    <type name="Magento\Backend\App\Action\Context">
+        <arguments>
+            <argument name="urlBuilder" xsi:type="object">Magento\Backend\Model\UrlInterface</argument>
+        </arguments>
+    </type>
+
+
+    <!--
     <virtualType name="Omnipro\QuickProductPositioning\Model\ResourceModel\Position\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">catalog_category_product</argument>
@@ -28,5 +41,23 @@
             </argument>
         </arguments>
     </type>
+    -->
+    <virtualType name="Omnipro\QuickProductPositioning\Model\ResourceModel\Position\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">catalog_category_product</argument>
+            <argument name="identifierName" xsi:type="string">entity_id</argument>
+            <argument name="eventPrefix" xsi:type="string">catalog_category_product_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">catalog_category_product_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Magento\Catalog\Model\ResourceModel\CategoryProduct</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="featuredproducts_index_listing_data_source" xsi:type="string">Omnipro\QuickProductPositioning\Model\ResourceModel\Position\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+
     <!-- /Grid and Admin -->
 </config>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_ImportExport:etc/import.xsd">
-    <entity name="catalog_product" label="Positions"
+    <entity name="catalog_product" label="Product Category Positions"
             model="Omnipro\QuickProductPositioning\Model\Import\Positions"
             behaviorModel="Magento\ImportExport\Model\Source\Import\Behavior\Basic"/>
 </config>

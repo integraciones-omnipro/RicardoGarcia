@@ -15,7 +15,6 @@ use Magento\ImportExport\Model\Import\ErrorProcessing\ProcessingErrorAggregatorI
 use Magento\ImportExport\Model\ResourceModel\Helper;
 use Magento\ImportExport\Model\ResourceModel\Import\Data;
 use Psr\Log\LoggerInterface;
-use Omnipro\QuickProductPositioning\Helper\Config;
 
 class Positions extends AbstractEntity
 {
@@ -24,6 +23,8 @@ class Positions extends AbstractEntity
     public const COL_CATEGORY_ID = 'category_id';
     public const COL_PRODUCT_ID = 'product_id';
     public const COL_POSITION = 'position';
+    public const COL_SKU = 'sku';
+    public const COL_TYPE_ID = 'type_id';
 
     /**
      * @var bool
@@ -52,7 +53,9 @@ class Positions extends AbstractEntity
         self::ENTITY_ID_COLUMN,
         self::COL_CATEGORY_ID,
         self::COL_PRODUCT_ID,
-        self::COL_POSITION
+        self::COL_POSITION,
+        self::COL_SKU,
+        self::COL_TYPE_ID
     ];
 
     /**
@@ -66,6 +69,11 @@ class Positions extends AbstractEntity
     protected LoggerInterface $logger;
 
     /**
+     * @var ResourceConnection
+     */
+    private ResourceConnection $resource;
+
+    /**
      * @param JsonHelper $jsonHelper
      * @param ImportHelper $importExportData
      * @param Data $importData
@@ -73,7 +81,6 @@ class Positions extends AbstractEntity
      * @param Helper $resourceHelper
      * @param ProcessingErrorAggregatorInterface $errorAggregator
      * @param LoggerInterface $logger
-     * @param Config $config
      */
     public function __construct(
         JsonHelper $jsonHelper,
@@ -82,8 +89,7 @@ class Positions extends AbstractEntity
         ResourceConnection $resource,
         Helper $resourceHelper,
         ProcessingErrorAggregatorInterface $errorAggregator,
-        LoggerInterface $logger,
-        Config $config
+        LoggerInterface $logger
     ) {
         $this->jsonHelper = $jsonHelper;
         $this->_importExportData = $importExportData;
@@ -93,7 +99,6 @@ class Positions extends AbstractEntity
         $this->connection = $resource->getConnection();
         $this->errorAggregator = $errorAggregator;
         $this->logger = $logger;
-        $this->config = $config;
     }
 
     /**
@@ -122,6 +127,14 @@ class Positions extends AbstractEntity
         if (isset($this->_validatedRows[$rowNum])) {
             return !$this->getErrorAggregator()->isRowInvalid($rowNum);
         }
+
+        array_filter(
+            $rowData,
+            function ($key) {
+                return in_array($key, $this->getValidColumnNames());
+            },
+            ARRAY_FILTER_USE_KEY
+        );
 
         $this->_validatedRows[$rowNum] = true;
 
@@ -216,10 +229,6 @@ class Positions extends AbstractEntity
         }
     }
 
-    /**
-     * @param array $entityData
-     * @return void
-     */
     private function saveEntityFinish(array $entityData): void
     {
         if ($entityData) {
@@ -228,7 +237,14 @@ class Positions extends AbstractEntity
 
             foreach ($entityData as $entityRows) {
                 foreach ($entityRows as $row) {
-                    $rows[] = $row;
+                    $filteredRow = array_filter(
+                        $row,
+                        function ($key) {
+                            return in_array($key, $this->getAvailableColumns());
+                        },
+                        ARRAY_FILTER_USE_KEY
+                    );
+                    $rows[] = $filteredRow;
                 }
             }
 
@@ -266,6 +282,6 @@ class Positions extends AbstractEntity
      */
     private function getAvailableColumns(): array
     {
-        return $this->validColumnNames;
+        return array_diff($this->validColumnNames, [self::COL_SKU, self::COL_TYPE_ID]);
     }
 }
